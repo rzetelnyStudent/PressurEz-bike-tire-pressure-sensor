@@ -68,7 +68,7 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="26" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="nrf_files.h" selected="0" top="3" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="my_utility.h" selected="0" top="42" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="79" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/my_advertising.h" useBinaryEdit="0" left="0" path="my_advertising.cpp" selected="0" top="54" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="27" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/Ble_buffer.cpp" useBinaryEdit="0" left="0" path="Ble_buffer.h" selected="1" top="3" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="6" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/Ble_buffer.cpp" useBinaryEdit="0" left="0" path="Ble_buffer.h" selected="1" top="3" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="95" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/my_advertising.cpp" useBinaryEdit="0" left="0" path="Ble_buffer.cpp" selected="0" top="75" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="3" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Adxl362.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="63" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="0" top="35" codecName="Default"/>
