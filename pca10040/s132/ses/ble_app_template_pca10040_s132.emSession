@@ -72,7 +72,7 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="14" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/Ble_buffer.cpp" useBinaryEdit="0" left="0" path="Ble_buffer.h" selected="0" top="3" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="95" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/my_advertising.cpp" useBinaryEdit="0" left="0" path="Ble_buffer.cpp" selected="0" top="75" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="3" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Adxl362.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="63" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="1" top="56" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="63" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="1" top="56" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="172" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ADC.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="19" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="mapper.h" selected="0" top="18" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="54" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/main.cpp" useBinaryEdit="0" left="0" path="measurments.h" selected="0" top="69" codecName="Default"/>
@@ -85,5 +85,5 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="63" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/Adxl362.h" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/delay/nrf_delay.h" selected="0" top="26" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="572" useTextEdit="1" openedFrom="C:/nrf_sdk/examples/MyProjects/BLE TPMS V1/pca10040/s132/ses/Adxl362.h" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/hal/nrf_gpio.h" selected="0" top="554" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="BLE TPMS V1" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nrf_sdk/modules/nrfx/drivers/src" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="BLE TPMS V1" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nrf_sdk/modules/nrfx/drivers/src" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
