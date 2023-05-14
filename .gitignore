@@ -1,32 +1,36 @@
-# Prerequisites
+*.axf
+*.swp
+*.htm
+*.Inp
+*.map
+*.tra
+*.dep
+*._2i
+*.l2p
+*.__i
+*.fed
+*.crf
 *.d
-
-# Compiled Object files
-*.slo
-*.lo
 *.o
-*.obj
+*.lst
+*.lnp
+*.bak
+*.scvd
 
-# Precompiled Headers
-*.gch
-*.pch
+*.ini
+*.iex
+*.sct
+*.uvgui.*
+*.uvguix.*
+*.tmp
+**/JLinkLog.txt
+**/_viminfo
+**/_vimtags
+_build/
+RTE/
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+## Segger Embedded Studio ##
+*.jlink
+**/ses/Output/
+*.orig
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
