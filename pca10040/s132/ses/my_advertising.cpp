@@ -9,7 +9,7 @@ My_advertising::My_advertising()
     m_adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
     memset(&m_adv_params, 0, sizeof(m_adv_params));   // zero m_adv_params
 
-    m_adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;      // my sensor is unconnectable (it's a broadcaster only)
+    m_adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_NONSCANNABLE_UNDIRECTED;      // my sensor is unconnectable (it's a broadcaster only)
     m_adv_params.p_peer_addr = NULL;     // Undirected advertisement. Sends packets to everyone
     m_adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
     m_adv_params.interval = ADVERTISING_INTERVAL;     // ADVERTISING interval is defined in my_config.h
@@ -32,9 +32,9 @@ void My_advertising::addIdToAddress(const Sensor_id &p_sensor_id)
     my_addr.addr[0] = p_sensor_id.id_hex[2];     // little endian encoding
     my_addr.addr[1] = p_sensor_id.id_hex[1];   
     my_addr.addr[2] = p_sensor_id.id_hex[0];   
-    my_addr.addr[3] = 0xca;     // all sensors sold has this EACA sequence in address
-    my_addr.addr[4] = 0xea;	    
-    my_addr.addr[5] = 0x80 + p_sensor_id.which_wheel;     // left front sensor has here 0x80, right front - 0x81...
+    my_addr.addr[3] = 0xBE;     // all sensors sold has this EACA sequence in address
+    my_addr.addr[4] = 0xEF;	    
+    my_addr.addr[5] = 0x81;
     err_code = sd_ble_gap_addr_set(&my_addr);
     APP_ERROR_CHECK(err_code);
 }
@@ -48,9 +48,9 @@ void My_advertising::addIdToAddress(const Sensor_id &p_sensor_id)
  *         p_bat_percentage - initial battery percentage to be advertised
  *         p_leak - initial pressure leak flag to be advertised.
  */
-void My_advertising::configureAdvertising(const uint32_t p_pressure, const uint32_t p_temperature, const uint8_t p_bat_percentage, const bool p_leak)
+void My_advertising::configureAdvertising(const uint16_t p_pressure, const int16_t p_temperature, const uint8_t p_bat_percentage)
 {
-    ble_buffer.setPressTempLeak(p_pressure, p_temperature, p_bat_percentage, p_leak);
+    ble_buffer.setPressTempLeak(p_pressure, p_temperature, p_bat_percentage);
     uint32_t err_code;
     err_code = sd_ble_gap_adv_set_configure(&m_adv_handle, ble_buffer.getBuffer(), &m_adv_params);
     APP_ERROR_CHECK(err_code);
@@ -77,9 +77,9 @@ void My_advertising::startAdvertising()
  *         p_bat_percentage - new battery percentage to be advertised
  *         p_leak - new pressure leak flag to be advertised [true - leak detected, false - not].
  */
-void My_advertising::updateAdvertising(const uint32_t p_pressure, const int32_t p_temperature, const uint8_t p_bat_percentage, const bool p_leak)
+void My_advertising::updateAdvertising(const uint16_t p_pressure, const int16_t p_temperature, const uint8_t p_bat_percentage)
 {
-    ble_buffer.setPressTempLeak(p_pressure, p_temperature, p_bat_percentage, p_leak);
+    ble_buffer.setPressTempLeak(p_pressure, p_temperature, p_bat_percentage);
     uint32_t err_code;
     err_code = sd_ble_gap_adv_set_configure(&m_adv_handle, ble_buffer.getBuffer(), NULL);
     APP_ERROR_CHECK(err_code);

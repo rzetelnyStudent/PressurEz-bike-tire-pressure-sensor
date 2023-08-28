@@ -17,20 +17,20 @@
  * ADC_CAL_THRESHOLD - the difference between temperature readings has to be larger than this to 
  * make checkIfAdcNeedsCal return true
  */
-template <int16_t PRESSURE_SENSITIVITY_KPA, int32_t TEMP_SENSITIVITY, int32_t ADC_CAL_THRESHOLD>
+template <int16_t PRESSURE_SENSITIVITY_KPA, int16_t TEMP_SENSITIVITY, int16_t ADC_CAL_THRESHOLD>
 class Measurments
 {
-    uint32_t prev_pressure_kPa;      // remembers last pressure advertised
-	int32_t prev_temperature;
+    uint16_t prev_pressure_kPa;      // remembers last pressure advertised
+	int16_t prev_temperature;
 	uint8_t prev_bat_percentage;
-	int32_t temp_adc_last_cal;
+	int16_t temp_adc_last_cal;
 
   public:
 
 	/*
 	 * Constructor initializes Measurments with: pressure, temperature, bat percentage.
 	 */
-    Measurments(uint32_t prev_pressure_kPa, int32_t prev_temperature, uint8_t prev_bat_percentage)
+    Measurments(uint16_t prev_pressure_kPa, int16_t prev_temperature, uint8_t prev_bat_percentage)
     {
         this->prev_pressure_kPa = prev_pressure_kPa;
         this->prev_temperature = prev_temperature;
@@ -38,16 +38,16 @@ class Measurments
 		this->temp_adc_last_cal = prev_temperature;
     }
 
-	uint32_t getPressure() {
-	return prev_pressure_kPa;
+	uint16_t getPressure() {
+		return prev_pressure_kPa;
 	}
 
-	int32_t getTemperature() {
-	return prev_temperature;
+	int16_t getTemperature() {
+		return prev_temperature;
 	}
 
 	uint8_t getBatPercentage() {
-	return prev_bat_percentage;
+		return prev_bat_percentage;
 	}
 
 
@@ -56,10 +56,10 @@ class Measurments
 	 * Call every time new readings are acquired. If current readings (parameters) are different,
 	 * old readings are updated with new readings and true is returned.
 	 */
-    bool checkForChanges(uint32_t pressure_kPa, int32_t temperature, uint8_t bat_percentage)
+    bool checkForChanges(uint16_t pressure_kPa, int16_t temperature, uint8_t bat_percentage)
     {
         bool pressure_changed, temp_changed, bat_perc_changed = false;
-        if (abs((int16_t)prev_pressure_kPa - (int16_t)pressure_kPa) > PRESSURE_SENSITIVITY_KPA)
+        if (abs((int32_t)prev_pressure_kPa - (int32_t)pressure_kPa) > PRESSURE_SENSITIVITY_KPA)
         {
             prev_pressure_kPa = pressure_kPa;
             pressure_changed = true;
@@ -83,7 +83,7 @@ class Measurments
     /* Checks if adc needs calibration (if current temperature is different than the temperature of last calibration 
 	 * by some threshold (ADC_CAL_THRESHOLD).
 	 */
-	bool checkIfAdcNeedsCal(int32_t temperature)
+	bool checkIfAdcNeedsCal(int16_t temperature)
 	{
 		if (abs(temp_adc_last_cal - temperature) > ADC_CAL_THRESHOLD)
 		{

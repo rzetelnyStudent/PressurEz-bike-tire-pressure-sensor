@@ -20,9 +20,9 @@ class My_advertising
   public:
     My_advertising();
     void addIdToAddress(const Sensor_id &p_sensor_id);
-    void configureAdvertising(const uint32_t p_pressure, const uint32_t p_temperature, const uint8_t p_bat_percentage, const bool p_leak);
+    void configureAdvertising(const uint16_t p_pressure, const int16_t p_temperature, const uint8_t p_bat_percentage);
     void startAdvertising();
-	void updateAdvertising(const uint32_t p_pressure, const int32_t p_temperature, const uint8_t p_bat_percentage, const bool p_leak);
+	void updateAdvertising(const uint16_t p_pressure, const int16_t p_temperature, const uint8_t p_bat_percentage);
 };
 
 #endif

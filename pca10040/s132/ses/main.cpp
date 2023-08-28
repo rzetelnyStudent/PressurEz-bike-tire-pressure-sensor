@@ -65,6 +65,7 @@ int main(void)
     powerManagementInit();
 
     bleStackInit();
+	sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
     My_advertising advertiser;
     advertiser.addIdToAddress(cfg::SENSOR_ID);		// attach sensor id to advertising buffer
 
@@ -76,7 +77,7 @@ int main(void)
     Measurments<cfg::PRESSURE_SENSITIVITY_KPA, cfg::TEMP_SENSITIVITY, cfg::TEMP_ADC_CALIBRATE>
         measurments(map(adc.analogReadPressure()), getTemperature(), bat_percentage);    // initialize measurments with real data
 
-    advertiser.configureAdvertising(measurments.getPressure(), measurments.getTemperature(), measurments.getBatPercentage(), false);     // setup advertising
+    advertiser.configureAdvertising(measurments.getPressure(), measurments.getTemperature(), measurments.getBatPercentage());     // setup advertising
 
     reading_timer_start();     // start system main timer
     Adxl362<cfg::SS_PIN, cfg::MOSI_PIN, cfg::MISO_PIN, cfg::SCLK_PIN, cfg::ACC_VCC_PIN> adxl362;
@@ -100,7 +101,7 @@ int main(void)
 #endif
 
             timer_flag = false;      // reset timer flag
-            int32_t temperature = getTemperature();		 // read temperature
+            int16_t temperature = getTemperature();		 // read temperature
             if (measurments.checkIfAdcNeedsCal(temperature))       // if the temperature changed sufficiently, calibrate ADC
             {
                 adc.calibrate();
@@ -115,10 +116,10 @@ int main(void)
 #ifdef CALIBRATION
 			
 			// if calibration is enabled, raw readings (without any mappings or checkings are advertised)
-			uint32_t pressure = map(adc.analogReadPressure());
+			uint16_t pressure = map(adc.analogReadPressure());
             //printf("Pressure: %d\n", pressure);
 
-            advertiser.updateAdvertising(adc.analogReadPressure(), temperature, bat_percentage, false);
+            advertiser.updateAdvertising(adc.analogReadPressure(), temperature, bat_percentage);
 
 #else	// advertise converted and filtered readings
 			

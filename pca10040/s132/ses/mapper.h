@@ -10,12 +10,12 @@
  * Function for mapping pressure using linear equation, with a, b coefficients taken from my_config.h.
  * Params: pressure raw pressure reading from adc.
  */
-inline uint32_t map(uint16_t pressure)
+inline uint16_t map(uint16_t pressure)
 {
 	int32_t result = (int32_t)((float)pressure * cfg::A_COEFFICIENT + cfg::B_COEFFICIENT);
 	if (result < 20)     // constrain to 0, values < 20kPa (0.2bar), so that can cast to int and the sensor doesn't show something like 0.01 insted of 0
 		result = 0;
-	return (uint32_t)result;
+	return (uint16_t)result;
 }
 
 
