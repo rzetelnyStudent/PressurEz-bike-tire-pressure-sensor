@@ -1,7 +1,7 @@
 #ifndef ADXL362_H
 #define ADXL362_H
 
-#define ADXL362_DEBUG     // when defined, prints accelerometer ID reg. (if communication with adxl362 is correct, should print 0xAD)
+//#define ADXL362_DEBUG     // when defined, prints accelerometer ID reg. (if communication with adxl362 is correct, should print 0xAD)
 
 extern "C"
 {

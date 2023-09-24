@@ -11,7 +11,7 @@ namespace cfg
 
 /////////////////////////////////////////////// SENSOR ID //////////////////////////////////////////////
 
-constexpr const Sensor_id SENSOR_ID {{0x00, 0x00, 0x05}};
+constexpr const Sensor_id SENSOR_ID {{0x00, 0x00, 0x07}};
 // ^ sensor ID will be displayed in: Bluetooth name, Bluetooth address, manufacturer data in advertising packet.
 // The android app ("TPMSII") does only care about the 3-byte ID coded in manufacturer data, when it identifies a sensor.
 
