@@ -65,7 +65,7 @@ int main(void)
     powerManagementInit();
 
     bleStackInit();
-	sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+	enableDC2DC();
     My_advertising advertiser;
     advertiser.addIdToAddress(cfg::SENSOR_ID);		// attach sensor id to advertising buffer
 
@@ -96,7 +96,9 @@ int main(void)
 
 #ifdef ADXL362_DEBUG
 			i++;
-			printf("%d\n", adxl362.adxlReadRegister(0x08));
+			printf("Acc ID reg: %d\n", adxl362.adxlReadRegister(0x00));
+			printf("%d\n", adxl362.adxlReadRegister(0x09));
+			printf("%d\n", adxl362.adxlReadRegister(0x0A));
 			printf("%d\n", i);
 #endif
 
@@ -127,7 +129,7 @@ int main(void)
             if (measurments.checkForChanges(map(adc.analogReadPressure()), temperature, bat_percentage))
             {
 				// if they changed, update transmitted data
-                advertiser.updateAdvertising(measurments.getPressure(), measurments.getTemperature(), measurments.getBatPercentage(), false);
+                advertiser.updateAdvertising(measurments.getPressure(), measurments.getTemperature(), measurments.getBatPercentage());
             }
 
 

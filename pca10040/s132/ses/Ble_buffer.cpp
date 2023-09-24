@@ -12,9 +12,13 @@ Ble_buffer::Ble_buffer()
 
     ble_adv_struct_1.adv_data.p_data = my_adv_data_1;
     ble_adv_struct_1.adv_data.len = cfg::ADV_DATA_L;
+	ble_adv_struct_1.scan_rsp_data.p_data = NULL;
+	ble_adv_struct_1.scan_rsp_data.len = 0;
 
     ble_adv_struct_2.adv_data.p_data = my_adv_data_2;
     ble_adv_struct_2.adv_data.len = cfg::ADV_DATA_L;
+	ble_adv_struct_2.scan_rsp_data.p_data = NULL;
+	ble_adv_struct_2.scan_rsp_data.len = 0;
 }
 
 

@@ -12,6 +12,8 @@ extern "C" {
 #endif //ADC_DEBUG
 }
 
+#include "sd_func_wrapper.h"
+
 
 /*
  * Class representing adc job in my project. In my project adc is used to read pressure and Vbat
@@ -154,6 +156,9 @@ void ADC<_bridge_pin, positive_in_pin, negative_in_pin>::setupForVbat()
 template <uint32_t _bridge_pin, uint32_t positive_in_pin, uint32_t negative_in_pin>
 uint16_t ADC<_bridge_pin, positive_in_pin, negative_in_pin>::analogReadPressure()
 {
+
+    disableDC2DC();    // I found disabling DCDC during the reading minimized noise a bit.
+
 	setupForPressure();
 
 	nrf_gpio_pin_set(_bridge_pin);
@@ -176,6 +181,8 @@ uint16_t ADC<_bridge_pin, positive_in_pin, negative_in_pin>::analogReadPressure(
     NRF_SAADC->TASKS_STOP = 0x01UL;
     while (!NRF_SAADC->EVENTS_STOPPED);
     NRF_SAADC->EVENTS_STOPPED = 0x00UL;
+
+	enableDC2DC();
 
 	pressure_raw = pressure_raw >> 1;	// just to remove useless noisy LSB
 

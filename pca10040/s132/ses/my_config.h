@@ -17,7 +17,7 @@ constexpr const Sensor_id SENSOR_ID {{0x00, 0x00, 0x05}};
 
 ////////////////////////////////////////////// CALIBRATION ////////////////////////////////////////////////
 
-#define CALIBRATION	   // when defined, sensor prints raw pressure readings, without any checks or mappings
+//#define CALIBRATION	   // when defined, sensor prints raw pressure readings, without any checks or mappings
 
 
 ////////////////////////////////////////////// ADVERTISING DATA ///////////////////////////////////////////l

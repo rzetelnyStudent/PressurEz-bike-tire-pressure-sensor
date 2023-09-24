@@ -1,6 +1,6 @@
 <!DOCTYPE CrossStudio_Project_File>
-<solution Name="BLE TPMS V1" target="8" version="2">
-  <project Name="BLE TPMS V1">
+<solution Name="PRESSUREZ SENSOR" target="8" version="2">
+  <project Name="PRESSUREZ SENSOR">
     <configuration
       Name="Common"
       arm_architecture="v7EM"
