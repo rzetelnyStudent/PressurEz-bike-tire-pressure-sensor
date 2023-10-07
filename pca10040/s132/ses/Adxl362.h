@@ -16,8 +16,8 @@ extern "C"
 
 
 // Hard reset Vcc fall and rise delay times:
-const static uint32_t DISCHARGE_TIME = 30;
-const static uint32_t VCC_RISE_TIME = 30;
+const static uint32_t DISCHARGE_TIME = 60;
+const static uint32_t VCC_RISE_TIME = 60;
 
 
 
