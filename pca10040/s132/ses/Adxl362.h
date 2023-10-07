@@ -1,7 +1,7 @@
 #ifndef ADXL362_H
 #define ADXL362_H
 
-//#define ADXL362_DEBUG     // when defined, prints accelerometer ID reg. (if communication with adxl362 is correct, should print 0xAD)
+#define ADXL362_DEBUG     // when defined, prints accelerometer ID reg. (if communication with adxl362 is correct, should print 0xAD)
 
 extern "C"
 {
@@ -28,8 +28,8 @@ const static uint32_t VCC_RISE_TIME = 60;
 // See the datasheet or Adxl362::hardResetVcc() down below.
 
 template <uint8_t p_ss_pin, uint8_t p_mosi_pin, uint8_t p_miso_pin, uint8_t p_sck_pin, uint8_t p_vcc_pin>
-class Adxl362 {
-
+class Adxl362 
+{
 
 
     // Some register defines:
@@ -37,7 +37,12 @@ class Adxl362 {
     const uint8_t READ_CMD = 0x0B;
     const uint8_t WRITE_CMD = 0x0A;
 
-    // -------------------- CONTROL REGS ADDRESSES ------------------------
+	// ---------------------- DATA REGS ADDRESSES --------------------------
+	const uint8_t X_DATA = 0x08;
+	const uint8_t Y_DATA = 0x09;
+	const uint8_t Z_DATA = 0x0A;
+
+    // -------------------- CONTROL REGS ADDRESSES -------------------------
     const uint8_t SOFT_RESET = 0x1f;
     const uint8_t THRESH_ACTL = 0x20;
     const uint8_t THRESH_ACTH = 0x21;
@@ -119,6 +124,12 @@ class Adxl362 {
     // ---------------------------- OTHER -----------------------------------
     const uint8_t FIFO_SAMPLES_NOT_USED = 0x80;
 
+	uint32_t interrupt_pin = 0;
+	uint32_t activity_th = 0;
+	uint32_t inactivity_th = 0;
+	uint32_t inactivity_time = 0;
+
+
     const nrf_drv_spi_t spi = NRF_DRV_SPI_INSTANCE(0);		/**< SPI instance. */
 	nrf_drv_spi_config_t m_spi_config;
 
@@ -128,32 +139,35 @@ class Adxl362 {
 	void initDelay();
 	template <uint32_t p_time_ms>
 	void sleepDelay();
+	bool isHung();
+	void setupSensor(uint8_t p_act_th, uint8_t p_inact_th, uint16_t p_inact_time);
 
 
 public:
 	template <uint32_t p_int_pin, uint8_t p_act_th, uint8_t p_inact_th, uint16_t p_inact_time>
 	void setupMotionInterrupt();
+	void superviseAcc();
 
 	
-#ifdef ADXL362_DEBUG
     /* Function for reading registers of adxl362. Only for debug purposes.
 	 *
 	 */
 	uint8_t adxlReadRegister(uint8_t reg_address)
 	{
-    uint32_t err_code;
+		setupSPI();
+		uint32_t err_code;
 
-    uint8_t rx_buffer[3];
+		uint8_t rx_buffer[3];
 
-    uint8_t tx_buffer[3];      //Prepare tx_buffer
-    tx_buffer[0] = READ_CMD;
-    tx_buffer[1] = reg_address;
-    tx_buffer[2] = 0x00;
-    err_code = nrf_drv_spi_transfer(&spi, tx_buffer, sizeof(tx_buffer), rx_buffer, sizeof(rx_buffer));
-    APP_ERROR_CHECK(err_code);
-    return rx_buffer[2];
+		uint8_t tx_buffer[3];      //Prepare tx_buffer
+		tx_buffer[0] = READ_CMD;
+		tx_buffer[1] = reg_address;
+		tx_buffer[2] = 0x00;
+		err_code = nrf_drv_spi_transfer(&spi, tx_buffer, sizeof(tx_buffer), rx_buffer, sizeof(rx_buffer));
+		APP_ERROR_CHECK(err_code);
+		uninitSPI();
+		return rx_buffer[2];
 	}
-#endif //ADXL362_DEBUG
 
 
 };
@@ -176,51 +190,22 @@ template <uint8_t p_ss_pin, uint8_t p_mosi_pin, uint8_t p_miso_pin, uint8_t p_sc
 template <uint32_t p_int_pin, uint8_t p_act_th, uint8_t p_inact_th, uint16_t p_inact_time>
 void Adxl362 <p_ss_pin, p_mosi_pin, p_miso_pin, p_sck_pin, p_vcc_pin>::setupMotionInterrupt()
 {
+	interrupt_pin = p_int_pin;
+	activity_th = p_act_th;
+	inactivity_th = p_inact_th;
+	inactivity_time = p_inact_time;
+
 	nrf_gpio_cfg_sense_input(p_int_pin, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
 	initDelay();
 	hardResetVcc();		// Adxl362 requires VDD to be completely discharged, if it drops below <1,8V. I decided to just discharge VDD every time
 	setupSPI();
-    const uint8_t DO_SOFT_RESET[]     // prepare SPI buffer 1
-    {
-        WRITE_CMD,
-        SOFT_RESET,         // soft - reset register address
-        SOFT_RESET_KEY      // soft - resets adxl362
-    };
-    uint32_t err_code = nrf_drv_spi_transfer(&spi, DO_SOFT_RESET, sizeof(DO_SOFT_RESET), NULL, 0);	   // transfers will be performed in blocking mode.
-    APP_ERROR_CHECK(err_code);
-	sleepDelay<5>();     // "A latency of approximately 0.5 ms is required after soft reset" ~datasheet P. 26
-
-    const uint8_t SENSOR_SETTINGS[]     // prepare SPI buffer 2, in my configuration Adxl362 is placed in wake-up mode, motion interrupt on pin 1
-    {
-        WRITE_CMD,
-        THRESH_ACTL,    // burst writing starting from this register (address 0x20)                        Address | Register name
-        p_act_th,       // ------------------------------------------------------------------------------- 0x20 (THRESH_ACTL)
-        0,     // ---------------------------------------------------------------------------------------- 0x21 (THRESH_ACTH)
-        0,     // ---------------------------------------------------------------------------------------- 0x22	(TIME_ACT) <- it doesn't matter (timer is off during sleep in wake-up mode)
-        p_inact_th,    // -------------------------------------------------------------------------------- 0x23 (THRESH_INACTL)
-        0,     // ---------------------------------------------------------------------------------------- 0x24 (THRESH_INACTH)
-        (p_inact_time * 6) & 0xFF,    // ----------------------------------------------------------------- 0x25 (TIME_INACTL)
-        (p_inact_time * 6) >> 8,    // ------------------------------------------------------------------- 0x26 (TIME_INACTH)
-        uint8_t(ACT_INACT_LINK | ACT_INACT_LOOP | INACT_AC | INACT_ENABLE | ACT_AC | ACT_ENABLE),   // --- 0x27 (ACT_INACT_CTL)
-        XL362_FIFO_MODE_OFF,    // ----------------------------------------------------------------------- 0x28 (FIFO_CONTROL)
-        FIFO_SAMPLES_NOT_USED,     // -------------------------------------------------------------------- 0x29 (FIFO_SAMPLES)
-        INT_AWAKE,    // --------------------------------------------------------------------------------- 0x2A (INTMAP1)
-        INT_OFF,     // ---------------------------------------------------------------------------------- 0x2B (INTMAP2)
-        FILTER_CTL_DEFAULT,    // ------------------------------------------------------------------------ 0x2C (FILTER_CTL)
-        uint8_t(MEASURE_3D | WAKE_UP)    // -------------------------------------------------------------- 0x2D	(POWER_CTL)		
-																									   //  [Alternatively: AUTO_SLEEP | MEASURE_3D, if you want to sample acceleration when motion is detected]
-    };
-    err_code = nrf_drv_spi_transfer(&spi, SENSOR_SETTINGS, sizeof(SENSOR_SETTINGS), NULL, 0);	 // no RX buffer needed
-    APP_ERROR_CHECK(err_code);
+	setupSensor(p_act_th, p_inact_th, p_inact_time);
+	uninitSPI();	  // Once the Adxl362 is set MCU can forget about it (I don't sample any acceleration data)
 
 #ifdef ADXL362_DEBUG // Print out device_id register. If 0xAD is printed, communication with ADXL_362 is succesful.
 	printf("%d\n", adxlReadRegister(0x00));
 #endif //ADXL362_DEBUG
-
-#ifndef ADXL362_DEBUG   
-	uninitSPI();	  // Once the Adxl362 is set MCU can forget about it (I don't sample any acceleration data)
-#endif
-
+ 
 }
 
 
@@ -322,6 +307,88 @@ void Adxl362 <p_ss_pin, p_mosi_pin, p_miso_pin, p_sck_pin, p_vcc_pin>::sleepDela
 		nrf_pwr_mgmt_run();		// sleep in system on in meantime
 	}
 	while (!vcc_rised);		// in case of any other event woke MCU, go to sleep (nrf_pwr_mgmt_run()) again
+}
+
+
+template <uint8_t p_ss_pin, uint8_t p_mosi_pin, uint8_t p_miso_pin, uint8_t p_sck_pin, uint8_t p_vcc_pin>
+bool Adxl362 <p_ss_pin, p_mosi_pin, p_miso_pin, p_sck_pin, p_vcc_pin>::isHung()
+{
+	const uint8_t tx_buffer[] = {
+		READ_CMD,
+		X_DATA,
+		0,
+		0,
+		0
+	};
+    uint8_t rx_buffer[sizeof(tx_buffer)];
+	
+	setupSPI();
+    uint32_t err_code = nrf_drv_spi_transfer(&spi, tx_buffer, sizeof(tx_buffer), rx_buffer, sizeof(rx_buffer));
+    APP_ERROR_CHECK(err_code);
+	uninitSPI();
+
+	// if X, Y, Z regs read as zero it means the accelerometer is hung (or it is at free fall).
+	return (rx_buffer[2] == 0 && rx_buffer[3] == 0 && rx_buffer[4] == 0);
+}
+
+
+template <uint8_t p_ss_pin, uint8_t p_mosi_pin, uint8_t p_miso_pin, uint8_t p_sck_pin, uint8_t p_vcc_pin>
+void Adxl362 <p_ss_pin, p_mosi_pin, p_miso_pin, p_sck_pin, p_vcc_pin>::superviseAcc()
+{
+	if (isHung())
+	{
+		#ifdef ADXL362_DEBUG
+		printf("Acc hung");
+		#endif
+		hardResetVcc();
+		setupSPI();
+		setupSensor(activity_th, inactivity_th, inactivity_time);	
+		uninitSPI();
+	}
+	else
+	{
+		#ifdef ADXL362_DEBUG
+		printf("Acc ok");
+		#endif
+	}
+}
+
+
+template <uint8_t p_ss_pin, uint8_t p_mosi_pin, uint8_t p_miso_pin, uint8_t p_sck_pin, uint8_t p_vcc_pin>
+void Adxl362 <p_ss_pin, p_mosi_pin, p_miso_pin, p_sck_pin, p_vcc_pin>::setupSensor(uint8_t p_act_th, uint8_t p_inact_th, uint16_t p_inact_time)
+{
+	const uint8_t DO_SOFT_RESET[]     // prepare SPI buffer 1
+    {
+        WRITE_CMD,
+        SOFT_RESET,         // soft - reset register address
+        SOFT_RESET_KEY      // soft - resets adxl362
+    };
+    uint32_t err_code = nrf_drv_spi_transfer(&spi, DO_SOFT_RESET, sizeof(DO_SOFT_RESET), NULL, 0);	   // transfers will be performed in blocking mode.
+    APP_ERROR_CHECK(err_code);
+	sleepDelay<5>();     // "A latency of approximately 0.5 ms is required after soft reset" ~datasheet P. 26
+
+    const uint8_t SENSOR_SETTINGS[]     // prepare SPI buffer 2, in my configuration Adxl362 is placed in wake-up mode, motion interrupt on pin 1
+    {
+        WRITE_CMD,
+        THRESH_ACTL,    // burst writing starting from this register (address 0x20)                        Address | Register name
+        p_act_th,       // ------------------------------------------------------------------------------- 0x20 (THRESH_ACTL)
+        0,     // ---------------------------------------------------------------------------------------- 0x21 (THRESH_ACTH)
+        0,     // ---------------------------------------------------------------------------------------- 0x22	(TIME_ACT) <- it doesn't matter (timer is off during sleep in wake-up mode)
+        p_inact_th,    // -------------------------------------------------------------------------------- 0x23 (THRESH_INACTL)
+        0,     // ---------------------------------------------------------------------------------------- 0x24 (THRESH_INACTH)
+        (p_inact_time * 6) & 0xFF,    // ----------------------------------------------------------------- 0x25 (TIME_INACTL)
+        (p_inact_time * 6) >> 8,    // ------------------------------------------------------------------- 0x26 (TIME_INACTH)
+        uint8_t(ACT_INACT_LINK | ACT_INACT_LOOP | INACT_AC | INACT_ENABLE | ACT_AC | ACT_ENABLE),   // --- 0x27 (ACT_INACT_CTL)
+        XL362_FIFO_MODE_OFF,    // ----------------------------------------------------------------------- 0x28 (FIFO_CONTROL)
+        FIFO_SAMPLES_NOT_USED,     // -------------------------------------------------------------------- 0x29 (FIFO_SAMPLES)
+        INT_AWAKE,    // --------------------------------------------------------------------------------- 0x2A (INTMAP1)
+        INT_OFF,     // ---------------------------------------------------------------------------------- 0x2B (INTMAP2)
+        FILTER_CTL_DEFAULT,    // ------------------------------------------------------------------------ 0x2C (FILTER_CTL)
+        uint8_t(MEASURE_3D | WAKE_UP)    // -------------------------------------------------------------- 0x2D	(POWER_CTL)		
+																									   //  [Alternatively: AUTO_SLEEP | MEASURE_3D, if you want to sample acceleration when motion is detected]
+    };
+    err_code = nrf_drv_spi_transfer(&spi, SENSOR_SETTINGS, sizeof(SENSOR_SETTINGS), NULL, 0);	 // no RX buffer needed
+    APP_ERROR_CHECK(err_code);
 }
 
 

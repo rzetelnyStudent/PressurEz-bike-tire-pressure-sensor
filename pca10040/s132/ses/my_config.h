@@ -11,7 +11,7 @@ namespace cfg
 
 /////////////////////////////////////////////// SENSOR ID //////////////////////////////////////////////
 
-constexpr const Sensor_id SENSOR_ID {{0x00, 0x00, 0x07}};
+constexpr const Sensor_id SENSOR_ID {{0x00, 0x00, 0x08}};
 // ^ sensor ID will be displayed in: Bluetooth name, Bluetooth address, manufacturer data in advertising packet.
 // The android app ("TPMSII") does only care about the 3-byte ID coded in manufacturer data, when it identifies a sensor.
 
@@ -91,7 +91,8 @@ const int32_t TEMP_ADC_CALIBRATE = 750;     // = 7.5*C
 #define READ_INTERVAL 1000      // defines how often the sensor should read, advertise and display pressure
 #define READ_TIMER_INTERVAL APP_TIMER_TICKS(READ_INTERVAL)     // converts read interval to app timer ticks
 #define ADVERTISING_INTERVAL MSEC_TO_UNITS(READ_INTERVAL, UNIT_0_625_MS)     // converts read interval to adverting interval
-const uint8_t READ_VBAT_INTERVAL = 10;      // Vbat gets read every READ_INTERVAL * READ_VBAT_INTERVAL seconds
+const uint8_t READ_VBAT_INTERVAL = 10;      // Vbat gets read every READ_INTERVAL * READ_VBAT_INTERVAL miliseconds
+const uint16_t SUPERVISE_ACC_INTERVAL = 3 * 60;    // Accelerometer gets supervised every 3 minutes
 
 };
 

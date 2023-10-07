@@ -16,6 +16,7 @@
 
 static bool timer_flag = false;
 static uint8_t read_vbat_counter = 0;
+static uint16_t supervise_acc_counter = 0;
 APP_TIMER_DEF(m_app_timer_id);
 
 
@@ -27,6 +28,7 @@ static void app_timer_handler(void *p_context)
 {
     timer_flag = true;
     read_vbat_counter++;
+	supervise_acc_counter++;
 }
 
 
@@ -103,11 +105,17 @@ int main(void)
 #endif
 
             timer_flag = false;      // reset timer flag
-            int16_t temperature = getTemperature();		 // read temperature
+            const int16_t temperature = getTemperature();		 // read temperature
             if (measurments.checkIfAdcNeedsCal(temperature))       // if the temperature changed sufficiently, calibrate ADC
             {
                 adc.calibrate();
             }
+
+			if (supervise_acc_counter > cfg::SUPERVISE_ACC_INTERVAL)
+			{
+				supervise_acc_counter = 0;
+				adxl362.superviseAcc();
+			}
 
             if (read_vbat_counter > cfg::READ_VBAT_INTERVAL)	   // battery percentage is read less often than pressure or temperature
             {

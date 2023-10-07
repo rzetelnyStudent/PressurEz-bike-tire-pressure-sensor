@@ -32,8 +32,8 @@ void My_advertising::addIdToAddress(const Sensor_id &p_sensor_id)
     my_addr.addr[0] = p_sensor_id.id_hex[2];     // little endian encoding
     my_addr.addr[1] = p_sensor_id.id_hex[1];   
     my_addr.addr[2] = p_sensor_id.id_hex[0];   
-    my_addr.addr[3] = 0xBE;     // all sensors sold has this EACA sequence in address
-    my_addr.addr[4] = 0xEF;	    
+    my_addr.addr[3] = 0xEF;     // all sensors sold has this EACA sequence in address
+    my_addr.addr[4] = 0xBE;	    
     my_addr.addr[5] = 0x81;
     err_code = sd_ble_gap_addr_set(&my_addr);
     APP_ERROR_CHECK(err_code);
