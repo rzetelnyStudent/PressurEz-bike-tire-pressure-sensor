@@ -1,3 +1,6 @@
+YouTube demo:
+https://www.youtube.com/watch?v=hxZcIib8Wpo
+
 My 2. version of Bluetooth tire pressure sensor. Compatible with my Android app: https://github.com/rzetelnyStudent/PressurEz-Android-app. Measures pressure, tempreture and battery percentage. Readings could be displayed only within my app. Sensor is integrated with a valve.
 
 This project was developed around nrf52832 microcontroller with Segger Embedded Studio and Nordic Semi SDK statement v17.1.0. Softdevice v7.2.0 (Bluetooth stack) from Nordic Semi was used.
